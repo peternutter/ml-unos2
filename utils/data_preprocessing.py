@@ -2,7 +2,7 @@ import logging
 import pandas as pd
 from sksurv.util import Surv
 from sklearn.model_selection import train_test_split
-from sklear.pipeline import Pipeline
+from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
@@ -55,7 +55,7 @@ def load_data(
     return df
 
 
-def split_data(df, indicator_columns, test_size=0.2, val_size=0.2, transform_y=True, random_state=42):
+def split_data(df, test_size=0.2, val_size=0.2, transform_y=True, random_state=42):
     """
     Splits a dataframe into training, validation, and test sets.
 
@@ -79,6 +79,7 @@ def split_data(df, indicator_columns, test_size=0.2, val_size=0.2, transform_y=T
     """
 
     # Identify features and target variable
+    indicator_columns = ["status", "time"]
     feature_cols = df.columns.drop(indicator_columns)
     X = df[feature_cols]
 

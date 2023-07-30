@@ -1,4 +1,7 @@
 .idea/
-__pycache_
+__pycache__
+*/__pycache_
+/scikit_surv/output/
 _/
 /data.feather
+job_**

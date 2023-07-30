@@ -60,9 +60,12 @@ def calculate_IBS(model, X_val, y_val, y_train):
     score_brier = -np.inf
     try:
         X_val_s, y_val_s = mask_data(X_val, y_val, y_train)
-        times = np.percentile(y_val_s["times"], np.linspace(10, 90, 100))
+        times = np.percentile(y_val_s["time"], np.linspace(10, 90, 100))
+        estimator = model
+        if hasattr(model, "estimator"):
+            estimator = model.best_estimator_
         surv_prob = np.row_stack(
-            [fn(times) for fn in model.predict_survival_function(X_val_s)]
+            [fn(times) for fn in estimator.predict_survival_function(X_val_s)]
         )
         score_brier = integrated_brier_score(y_train, y_val_s, surv_prob, times)
         logging.info(f"IBS: {score_brier}")
@@ -75,7 +78,7 @@ def calculate_IBS(model, X_val, y_val, y_train):
 def calculate_auc(y_val, y_train, risk):
     mean_auc = -np.inf
     try:
-        times = np.percentile(y_train["times"], np.linspace(10, 90, 100))
+        times = np.percentile(y_train["time"], np.linspace(10, 90, 100))
         auc, mean_auc = cumulative_dynamic_auc(y_train, y_val, risk, times=times)
         logging.info(f"Mean AUC: {mean_auc} using risk")
     except Exception as e:
@@ -95,7 +98,7 @@ def calculate_and_save_permutation_importance(
             random_state=42,
             n_jobs=n_jobs,
         )
-        feature_names = preprocessor.get_feature_names()
+        feature_names = preprocessor.get_feature_names_out()
         importance_df = build_importance_df(result, feature_names)
         logging.info(f"Permutation importance: {importance_df}")
         # Convert string to path

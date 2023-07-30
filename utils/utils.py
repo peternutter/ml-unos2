@@ -9,18 +9,9 @@ import psutil
 
 
 def calculate_tau(df):
-    max_time = df[df["statues"] == True]["time"].max()
+    max_time = df[df["status"] == True]["time"].max()
     return max_time
 
-
-# def log_memory_periodically(interval=500):
-#     while True:
-#         log_memory()
-#         time.sleep(interval)
-#
-# def log_memory():
-#     available_memory = psutil.virtual_memory().available
-#     logging.info(f"Available memory: {available_memory / (1024 ** 2)} MB")
 
 def log_memory_periodically(interval=500):
     while True:

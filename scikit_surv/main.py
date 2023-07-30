@@ -26,7 +26,7 @@ def main():
     columns_numeric = BASIC_COLUMNS["numeric"]
     columns_categorical = BASIC_COLUMNS["categorical"]
     indicator_columns = OUTPUT_VARS["kidney"]
-    df = load_data(data_path, columns_numeric, columns_categorical, indicator_columns, sample=0.01)
+    df = load_data(data_path, columns_numeric, columns_categorical, indicator_columns, sample=1)
 
     X_train, X_val, X_test, y_train, y_val, y_test = split_data(
         df, test_size=0.2, val_size=0.2, transform_y=True
@@ -38,7 +38,7 @@ def main():
     logging.info("Training and saving model...")
 
     model_path = model_path_format.format(output_dir=output_dir)
-    model = SurvivalModelFactory.get_coxnet_model()
+    model = SurvivalModelFactory.get_random_forest_model()
     concordance_wrappper = ScorerFactory.as_concordance_index_ipcw_scorer(model, y_train)
     param_grid = ModelParameterGridFactory.get_coxnet_param_grid()
     random_search = create_randomized_search(param_grid, concordance_wrappper)
