@@ -7,7 +7,8 @@ from sksurv.ensemble import (
     ExtraSurvivalTrees,
 )
 from sksurv.svm import FastSurvivalSVM, FastKernelSurvivalSVM
-from sksurv.metrics import *
+from sksurv.metrics import as_cumulative_dynamic_auc_scorer, as_concordance_index_ipcw_scorer, as_integrated_brier_score_scorer
+from utils.utils import calculate_tau
 
 class SurvivalModelFactory:
 
@@ -168,3 +169,12 @@ class ScorerFactory:
     @staticmethod
     def get_as_integrated_brier_scorer(model, times):
         return as_integrated_brier_score_scorer(model, times=times)
+    @staticmethod
+    def as_concordance_index_ipcw_scorer(model, times):
+        return as_concordance_index_ipcw_scorer(model, calculate_tau(times))
+    @staticmethod
+    def as_cumulative_dynamic_auc_scorer(model, times):
+        return as_cumulative_dynamic_auc_scorer(model, times=times)
+
+
+

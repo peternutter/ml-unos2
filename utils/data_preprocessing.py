@@ -44,7 +44,7 @@ def load_data(
     df.set_index("_id", inplace=True)
     df = df[columns_numeric + columns_categorical + indicator_columns]
     logging.info(f"Data loaded. Shape: {df.shape}")
-
+    df = df.rename(columns={indicator_columns[0]: "status", indicator_columns[1]: "time"})
     if dropna:
         df.dropna(inplace=True)
         logging.info(f"Data after dropping NaNs. Shape: {df.shape}")
@@ -63,8 +63,6 @@ def split_data(df, indicator_columns, test_size=0.2, val_size=0.2, transform_y=T
     ----------
     df : pandas.DataFrame
         The dataframe to be split.
-    indicator_columns : list
-        List of indicator column names.
     test_size : float, optional
         The proportion of the dataset to include in the test split.
     val_size : float, optional
@@ -85,7 +83,7 @@ def split_data(df, indicator_columns, test_size=0.2, val_size=0.2, transform_y=T
     X = df[feature_cols]
 
     if transform_y:
-        y = Surv.from_dataframe(indicator_columns[0], indicator_columns[1], df[indicator_columns])
+        y = Surv.from_dataframe("status", "time", df[indicator_columns])
     else:
         y = df[indicator_columns]
 
@@ -150,3 +148,41 @@ def create_preprocessor(columns_numeric, columns_categorical, min_frequency=None
     ])
 
     return preprocessor
+
+def preprocess_data(X, y, preprocessor, feature_selector=None, fit=True):
+    """
+    Preprocess data using a specified preprocessor and optionally a feature selector.
+
+    Parameters:
+    X (pd.DataFrame): The input data.
+    y (pd.DataFrame): The input labels.
+    preprocessor (sklearn.TransformerMixin): The preprocessor object.
+    feature_selector (sklearn.FeatureSelection, optional): The feature selector object.
+    fit (bool, optional): If True, fit the preprocessor and (optionally) the feature selector on the data.
+
+    Returns:
+    X_selected (pd.DataFrame): The preprocessed and optionally feature-selected data.
+    """
+
+    # Fit or transform data with preprocessor
+    X_transformed = preprocessor.fit_transform(X) if fit else preprocessor.transform(X)
+
+    # Convert to dense if it's a sparse matrix
+    if hasattr(X_transformed, "toarray"):
+        X_transformed = X_transformed.toarray()
+
+    if feature_selector:
+        # Fit or transform data with feature_selector
+        X_selected = feature_selector.fit_transform(X_transformed, y) if fit else feature_selector.transform(X_transformed)
+
+        # Log feature selection info if fitting
+        if fit:
+            if hasattr(feature_selector, "get_support"):
+                logging.info(f"Selected features: {feature_selector.get_support(indices=True)}")
+            if hasattr(feature_selector, "n_components_"):
+                logging.info(f"Number of components: {feature_selector.n_components_}")
+    else:
+        X_selected = X_transformed
+
+    logging.info(f"Preprocessed data shape: {X_selected.shape}")
+    return X_selected
