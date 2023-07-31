@@ -59,27 +59,30 @@ def calculate_IBS(model, X_val, y_val, y_train):
     score_brier = -np.inf
     try:
         X_val_s, y_val_s = mask_data(X_val, y_val, y_train)
-        times = abs(np.array(model.time_buckets))
-        times = np.append(times, abs(model.time_buckets[-1][1]))
-        low, high = np.percentile(y_train["time"], [10, 90])
-        times = times[(times > low) & (times < high)]
-        
-        surv_prob = np.row_stack([fn for fn in model.predict_survival(X_val_s)])
-        surv_prob = surv_prob[:, times]
-        
+        times = np.percentile(y_val_s["time"], np.linspace(10, 90, 100))
+        estimator = model
+        if hasattr(model, "best_estimator_"):
+            estimator = model.best_estimator_
+        surv_prob = np.row_stack(
+            [fn(times) for fn in estimator.predict_survival_function(X_val_s)]
+        )
         score_brier = integrated_brier_score(y_train, y_val_s, surv_prob, times)
         logging.info(f"IBS: {score_brier}")
     except Exception as e:
-        log_error(e)
+        logging.error(f"Error in calculate_IBS: {str(e)}")
+        logging.error(traceback.format_exc())
     return score_brier
 
 def calculate_auc(y_val, y_train, risk):
     mean_auc = -np.inf
     try:
-        times = np.percentile(y_train["time"], np.linspace(10, 90, 100))
         tau = calculate_tau(y_train)
+        mask = y_val["time"] < tau
+        y_val_s = y_val[mask]
+        risk_s = risk[mask]
+        times = np.percentile(y_train["time"], np.linspace(10, 90, 100))
         times = times[times < tau]
-        auc, mean_auc = cumulative_dynamic_auc(y_train, y_val, risk, times=times)
+        auc, mean_auc = cumulative_dynamic_auc(y_train, y_val_s, risk_s, times=times)
         logging.info(f"Mean AUC: {mean_auc} using risk")
     except Exception as e:
         logging.error(f"Error in calculate_auc: {str(e)} using risk")
@@ -89,6 +92,7 @@ def calculate_auc(y_val, y_train, risk):
 
 def calculate_and_save_permutation_importance(
         model, X_test, y_test, preprocessor, model_path, n_repeats=15, n_jobs=4):
+    logging.info("Calculating permutation importance...")
     try:
         result = permutation_importance(
             model,
@@ -99,6 +103,7 @@ def calculate_and_save_permutation_importance(
             n_jobs=n_jobs,
         )
         feature_names = preprocessor.get_feature_names_out()
+        print(feature_names)
         importance_df = build_importance_df(result, feature_names)
         logging.info(f"Permutation importance: {importance_df}")
         # Convert string to path

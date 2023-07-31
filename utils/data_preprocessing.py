@@ -1,4 +1,5 @@
 import logging
+import numpy as np
 import pandas as pd
 from sksurv.util import Surv
 from sklearn.model_selection import KFold, RandomizedSearchCV, train_test_split

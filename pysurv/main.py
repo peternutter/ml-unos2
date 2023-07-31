@@ -31,7 +31,7 @@ def main():
     columns_categorical = BASIC_COLUMNS["categorical"]
     indicator_columns = OUTPUT_VARS["kidney"]
     df = load_data(
-        data_path, columns_numeric, columns_categorical, indicator_columns, sample=0.1
+        data_path, columns_numeric, columns_categorical, indicator_columns, sample=1
     )
 
     X_train, X_val, X_test, y_train, y_val, y_test = split_data(
@@ -44,7 +44,7 @@ def main():
 
     model_path = model_path_format.format(output_dir=output_dir)
 
-    param_factory = ParamFactory(model="coxPH", is_grid=False)
+    param_factory = ParamFactory(model="non_linear_cox", is_grid=False)
     model, param_grid = param_factory.get_params()
     pca = PCA(n_components=0.99)
     # Train and save model

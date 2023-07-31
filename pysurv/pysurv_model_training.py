@@ -21,8 +21,6 @@ def preprocess_train_validate_pysurv(model, X_train, y_train, X_val, y_val, prep
 
     best_params, best_score, best_model = hyperparameter_tuning(model, X_train_selected, y_train, X_val_selected, y_val, param_grid, scorer=scorer)
 
-    logging.info(f"Best params: {best_params}")
-    logging.info(f"Best score: {best_score}")
     best_model.save(model_path)
 
     if hasattr(best_model, "structure"):

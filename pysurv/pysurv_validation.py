@@ -58,7 +58,7 @@ def validate_model(model, X_val, y_val, y_train=None):
 
 
 def calculate_and_save_permutation_importance(
-    model, X_test, y_test, preprocessor, model_path, n_repeats=15, n_jobs=4
+    model, X_test, y_test, preprocessor, model_path, n_repeats=15, n_jobs=-1
 ):
     try:
         logging.info("Calculating permutation importance...")
