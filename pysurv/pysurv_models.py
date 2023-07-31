@@ -51,7 +51,7 @@ class ParamFactory:
         if self.is_grid:
             params = {
                 "lr": [1.1, 1.0, 1.3],
-                "l2_reg": np.linspace(1e-4, 1e-1, num=10),
+                "l2_reg": np.linspace(1e-4, 1e-1, num=5),
                 "max_iter": [30, 40],
                 "init_method": ["zeros"],
             }

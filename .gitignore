@@ -2,6 +2,7 @@
 __pycache__
 */__pycache_
 /scikit_surv/output/
+/pysurv/output/
 _/
 /data.feather
 job_**

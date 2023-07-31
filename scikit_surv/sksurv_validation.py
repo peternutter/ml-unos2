@@ -55,25 +55,23 @@ def mask_data(X_val, y_val, y_train):
     X_val_s = X_val[mask]
     return X_val_s, y_val_s
 
-
 def calculate_IBS(model, X_val, y_val, y_train):
     score_brier = -np.inf
     try:
         X_val_s, y_val_s = mask_data(X_val, y_val, y_train)
-        times = np.percentile(y_val_s["time"], np.linspace(10, 90, 100))
-        estimator = model
-        if hasattr(model, "best_estimator_"):
-            estimator = model.best_estimator_
-        surv_prob = np.row_stack(
-            [fn(times) for fn in estimator.predict_survival_function(X_val_s)]
-        )
+        times = abs(np.array(model.time_buckets))
+        times = np.append(times, abs(model.time_buckets[-1][1]))
+        low, high = np.percentile(y_train["time"], [10, 90])
+        times = times[(times > low) & (times < high)]
+        
+        surv_prob = np.row_stack([fn for fn in model.predict_survival(X_val_s)])
+        surv_prob = surv_prob[:, times]
+        
         score_brier = integrated_brier_score(y_train, y_val_s, surv_prob, times)
         logging.info(f"IBS: {score_brier}")
     except Exception as e:
-        logging.error(f"Error in calculate_IBS: {str(e)}")
-        logging.error(traceback.format_exc())
+        log_error(e)
     return score_brier
-
 
 def calculate_auc(y_val, y_train, risk):
     mean_auc = -np.inf
