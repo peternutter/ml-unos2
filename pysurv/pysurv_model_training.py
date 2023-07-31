@@ -9,9 +9,9 @@ from utils.utils import calculate_tau, log_memory_periodically
 from sksurv.util import Surv
 from sksurv.metrics import *
 from sklearn.model_selection import ParameterGrid
-from pysurv.pysurv_validation import calculate_IBS, validate_model
+from pysurv.pysurv_validation import calculate_IBS, calculate_and_save_permutation_importance, validate_model
 
-def preprocess_train_validate_pysurv(model, X_train, y_train, X_val, y_val, preprocessor, feature_selector, scorer, model_path, param_grid):
+def preprocess_train_validate_pysurv(model, X_train, y_train, X_val, y_val, preprocessor, feature_selector, scorer, model_path, param_grid, calculate_feature_importance=False):
     X_train_selected = preprocess_data(X_train, y_train, preprocessor, feature_selector, fit=True)
     X_val_selected = preprocess_data(X_val, y_val, preprocessor, feature_selector, fit=False)
 
@@ -28,7 +28,10 @@ def preprocess_train_validate_pysurv(model, X_train, y_train, X_val, y_val, prep
     if hasattr(best_model, "structure"):
         logging.info(f"Model structure: {best_model.structure}")
 
-    validate_model(best_model, X_val_selected, y_val, y_train)
+    c_index_surv, c_ipcws, mean_auc, ibs = validate_model(best_model, X_val_selected, y_val, y_train)
+    if calculate_feature_importance:
+        importances = calculate_and_save_permutation_importance(best_model, X_val_selected, y_val, preprocessor, model_path)
+    return best_model
 
 
 
@@ -71,7 +74,8 @@ def fit_and_score( model, params, X_train, y_train, X_val, y_val, scorer = conco
 
 def hyperparameter_tuning(model, X_train, y_train, X_val, y_val, hyperparameters, scorer=concordance_index_ipcw):
     param_grid = ParameterGrid(hyperparameters)
-    logging.info(f"Starting hyperparameter tuning with {len(param_grid)} combinations")
+    model_name = str(model.__name__)
+    logging.info(f"Starting hyperparameter tuning {model_name} with {len(param_grid)} combinations")
 
     best_params = None
     best_score = -np.inf

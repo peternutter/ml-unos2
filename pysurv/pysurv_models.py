@@ -146,9 +146,9 @@ class ParamFactory:
             }
         else:
             params = {
-                "num_trees": [100],
+                "num_trees": [300],
                 "max_features": ["sqrt"],
-                "max_depth": [15],
+                "max_depth": [12],
                 "min_node_size": [40],
                 "sample_size_pct": [0.8],
             }
