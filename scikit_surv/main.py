@@ -3,7 +3,7 @@ import sys
 from datetime import datetime
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(parent_dir)
-from utils.model_training import create_randomized_search
+from utils.data_preprocessing import create_randomized_search
 from utils.logger import get_output_dir, setup_logging, parse_arguments
 from utils.data_preprocessing import load_data, split_data, create_preprocessor
 import logging
@@ -12,7 +12,7 @@ from sklearn.decomposition import PCA
 from config.config import timestamp_format, data_filename_feather, model_path_format
 from config.column_names import BASIC_COLUMNS, OUTPUT_VARS
 from scikit_surv.sksurv_models import SurvivalModelFactory, ModelParameterGridFactory, ScorerFactory
-from utils.model_training import preprocess_train_validate
+from scikit_surv.sksurv_model_training import preprocess_train_validate
 
 def main():
     args = parse_arguments()

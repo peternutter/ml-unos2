@@ -1,56 +1,12 @@
 import threading
+from scikit_surv.sksurv_validation import calculate_and_save_permutation_importance, validate_model
+from utils.data_preprocessing import preprocess_data
 
-from sklearn.model_selection import KFold, RandomizedSearchCV
-from sksurv.ensemble import RandomSurvivalForest
-import numpy as np
+
 import logging
 
-from scikit_surv.sksurv_validation import validate_model, calculate_and_save_permutation_importance
-from utils.data_preprocessing import preprocess_data
 from utils.utils import log_memory_periodically, log_model_params
-from joblib import dump
 
-def create_randomized_search(
-        param_distributions: dict,
-        model = None,
-        n_iter: int = 10,
-        n_splits: int = 3,
-        n_jobs: int = 2,
-) -> RandomizedSearchCV:
-    """
-    Create a RandomizedSearchCV object for survival analysis.
-
-    Args:
-    param_distributions: Dictionary with parameters names (str) as keys
-        and distributions or lists of parameters to try.
-    model: The model to use for survival analysis. If None, RandomSurvivalForest will be used.
-    n_iter: Number of parameter settings that are sampled.
-    n_splits: Number of folds for cross-validation.
-    n_jobs: Number of jobs to run in parallel.
-
-    Returns:
-    RandomizedSearchCV object.
-    """
-    logging.info(f"Randomized search, n_jobs={n_jobs}")
-
-    cv = KFold(n_splits=n_splits, shuffle=True, random_state=42)
-    if hasattr(model, "estimator"):
-        param_distributions = {
-            f"estimator__{key}": value for key, value in param_distributions.items()
-        }
-
-    randomized_search = RandomizedSearchCV(
-        estimator=model,
-        param_distributions=param_distributions,
-        n_iter=n_iter,
-        cv=cv,
-        verbose=4,
-        n_jobs=n_jobs,
-        random_state=42,
-        error_score=-np.inf,
-        refit=True,
-    )
-    return randomized_search
 
 def train_model(model, X_train, y_train, model_path):
     """
