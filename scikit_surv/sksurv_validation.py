@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 from sklearn.inspection import permutation_importance
 from sksurv.metrics import *
+
 from utils.utils import calculate_tau, log_error
 
 
@@ -21,7 +22,7 @@ def validate_model(model, X_val, y_val, y_train=None):
     c_index_surv = calculate_c_index_surv(y_val, y_pred)
     ibs = calculate_IBS(model, X_val, y_val, y_train)
     c_ipcws = calculate_c_ipcws(y_train, y_val, y_pred, tau)
-    mean_auc = calculate_auc(y_val,y_train, y_pred)
+    mean_auc = calculate_auc(y_val, y_train, y_pred)
 
     return c_index_surv, c_ipcws, mean_auc, ibs
 
@@ -55,6 +56,7 @@ def mask_data(X_val, y_val, y_train):
     X_val_s = X_val[mask]
     return X_val_s, y_val_s
 
+
 def calculate_IBS(model, X_val, y_val, y_train):
     score_brier = -np.inf
     try:
@@ -72,6 +74,7 @@ def calculate_IBS(model, X_val, y_val, y_train):
         logging.error(f"Error in calculate_IBS: {str(e)}")
         logging.error(traceback.format_exc())
     return score_brier
+
 
 def calculate_auc(y_val, y_train, risk):
     mean_auc = -np.inf

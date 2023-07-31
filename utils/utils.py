@@ -3,8 +3,6 @@ import logging
 import time
 import traceback
 
-import pandas as pd
-import numpy as np
 import psutil
 
 
@@ -22,6 +20,7 @@ def log_memory_periodically(interval=500):
             logging.error(f"Failed to log memory: {str(e)}")
             break
 
+
 def log_memory():
     memory_stats = psutil.virtual_memory()
     available_memory = memory_stats.available
@@ -35,7 +34,6 @@ def log_memory():
                   Percent used: {percent_used}%")
 
 
-
 def log_model_params(model, prefix=""):
     """
     Recursively log model parameters and scores if they exist.
@@ -44,7 +42,7 @@ def log_model_params(model, prefix=""):
     model (sklearn.base.BaseEstimator): The model to log parameters and scores from.
     prefix (str): Prefix to use in logging, useful for nested models.
     """
-    
+
     # Log the class name of the current model
     logging.info(f"{prefix}Model: {model.__class__.__name__}")
 
@@ -64,7 +62,7 @@ def log_model_params(model, prefix=""):
         "best_params_",
         "feature_importances_",
     ]
-    
+
     for attr in log_attributes:
         try:
             value = getattr(model, attr) if callable(getattr(model, attr)) else getattr(model, attr, 'N/A')

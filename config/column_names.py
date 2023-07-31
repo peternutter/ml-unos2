@@ -11,7 +11,7 @@ BASIC_COLUMNS = {
         "COLD_ISCH_KI",  # Kidney cold ischemic time (hours)
         "KDRI_RAO",  # Kidney Donor Risk Index (risk score)
         "CREAT_TRR",  # Creatinine level of the recipient at the time of transplant 0.201259
-        "DIAL_LEN", # Length of time on dialysis (days)
+        "DIAL_LEN",  # Length of time on dialysis (days)
     ],
     "categorical": [
         "ETHCAT",  # Ethnic category of the recipient
@@ -45,13 +45,15 @@ EXTRA_COLUMNS = {
         "DAYSWAIT_ALLOC",  # TIME USED FOR ALLOCATION PRIORITY (DAYS)
         "CURRENT_PRA",  # Candidate most recent "current" PRA from waiting list/allocation
         "INIT_CPRA",  # CANDIDATE CALCULATED PRA AT LISTING
-        "END_CPRA",  # Calculated Panel Reactive Antibody (cPRA) value at the end of the waiting period percent_null:0.426746 rsf = 3.858056993504093e-05
+        "END_CPRA",
+        # Calculated Panel Reactive Antibody (cPRA) value at the end of the waiting period percent_null:0.426746 rsf = 3.858056993504093e-05
     ],
     "categorical": [
         "HLAMIS",  # HLA locus mismatch score between the recipient and the donor
         "DRUGTRT_COPD",  # Recipient drug treated COPD at registration rsd = 1.77048445436645e-06
         "HCV_SEROSTATUS",  # Recipient Hepatitis C Virus serostatus rsf=-2.3015112276314475e-06
-        "MED_COND_TRR",  #  Recipient medical condition pre-transplant at transplant HOSPITALIZED NOT IN ICU, IN INTENSIVE CARE UNIT, NOT HOSPITALIZED
+        "MED_COND_TRR",
+        # Recipient medical condition pre-transplant at transplant HOSPITALIZED NOT IN ICU, IN INTENSIVE CARE UNIT, NOT HOSPITALIZED
         "PRE_TX_TXFUS",  # RECIPIENT # OF PRE-TRANSPLANT TRANSFUSIONS-KI  @ TRANSPLANT rsf = 1.0657349506985417e-05
         "DGN_TCR",  # PRIMARY DIAGNOSIS AT TIME OF LISTING
         "COD_CAD_DON",  # Deceased donor cause of death
@@ -83,4 +85,3 @@ OUTPUT_VARS = {
         "PTIME",  # Patient Survival Time in days (based on composite death date)
     ],
 }
-

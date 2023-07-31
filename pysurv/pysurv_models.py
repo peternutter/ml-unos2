@@ -1,15 +1,15 @@
 import numpy as np
-from pysurvival.models.semi_parametric import CoxPHModel, NonLinearCoxPHModel
-from pysurvival.models.survival_forest import (
-    RandomSurvivalForestModel,
-    ConditionalSurvivalForestModel,
-)
 from pysurvival.models.multi_task import NeuralMultiTaskModel
 from pysurvival.models.parametric import (
     WeibullModel,
     ExponentialModel,
     GompertzModel,
 )
+from pysurvival.models.semi_parametric import CoxPHModel, NonLinearCoxPHModel
+from pysurvival.models.survival_forest import (
+    RandomSurvivalForestModel,
+)
+
 
 class ParamFactory:
     """
@@ -25,6 +25,7 @@ class ParamFactory:
     Available models are:
     'coxPH', 'non_linear_cox', 'MTLR', 'rsf', 'exponential', 'weibull', 'gompertz'
     """
+
     def __init__(self, model: str, is_grid: bool = False):
         self.model = model
         self.is_grid = is_grid
@@ -153,7 +154,6 @@ class ParamFactory:
                 "sample_size_pct": [0.8],
             }
         return RandomSurvivalForestModel, params
-    
 
     def get_exponential_params(self):
         if self.is_grid:

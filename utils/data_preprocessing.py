@@ -1,12 +1,14 @@
 import logging
+
 import numpy as np
 import pandas as pd
-from sksurv.util import Surv
+from sklearn.compose import ColumnTransformer
+from sklearn.impute import SimpleImputer
 from sklearn.model_selection import KFold, RandomizedSearchCV, train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.impute import SimpleImputer
-from sklearn.compose import ColumnTransformer
+from sksurv.util import Surv
+
 
 def load_data(
         path,
@@ -106,7 +108,6 @@ def split_data(df, test_size=0.2, val_size=0.2, transform_y=True, random_state=4
     return X_train, X_val, X_test, y_train, y_val, y_test
 
 
-
 def create_preprocessor(columns_numeric, columns_categorical, min_frequency=None):
     """
     Creates a preprocessing pipeline for numeric and categorical data.
@@ -151,6 +152,7 @@ def create_preprocessor(columns_numeric, columns_categorical, min_frequency=None
 
     return preprocessor
 
+
 def preprocess_data(X, y, preprocessor, feature_selector=None, fit=True):
     """
     Preprocess data using a specified preprocessor and optionally a feature selector.
@@ -175,7 +177,8 @@ def preprocess_data(X, y, preprocessor, feature_selector=None, fit=True):
 
     if feature_selector:
         # Fit or transform data with feature_selector
-        X_selected = feature_selector.fit_transform(X_transformed, y) if fit else feature_selector.transform(X_transformed)
+        X_selected = feature_selector.fit_transform(X_transformed, y) if fit else feature_selector.transform(
+            X_transformed)
 
         # Log feature selection info if fitting
         if fit:
@@ -192,7 +195,7 @@ def preprocess_data(X, y, preprocessor, feature_selector=None, fit=True):
 
 def create_randomized_search(
         param_distributions: dict,
-        model = None,
+        model=None,
         n_iter: int = 10,
         n_splits: int = 3,
         n_jobs: int = 2,

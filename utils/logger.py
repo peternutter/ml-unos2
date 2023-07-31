@@ -1,11 +1,12 @@
 import argparse
 import logging
 import os
-from datetime import datetime
+
 from config.config import output_dir_format, log_filename_format
 
 # Include this line to prevent potential multiprocessing issues with NumPy in certain cases
 os.environ["PYTHONHASHSEED"] = "0"
+
 
 def parse_arguments():
     """

@@ -4,14 +4,16 @@ import time
 import traceback
 
 import numpy as np
+from sklearn.model_selection import ParameterGrid
+from sksurv.metrics import *
+
+from pysurv.pysurv_validation import calculate_IBS, calculate_and_save_permutation_importance, validate_model
 from utils.data_preprocessing import preprocess_data
 from utils.utils import calculate_tau, log_memory_periodically
-from sksurv.util import Surv
-from sksurv.metrics import *
-from sklearn.model_selection import ParameterGrid
-from pysurv.pysurv_validation import calculate_IBS, calculate_and_save_permutation_importance, validate_model
 
-def preprocess_train_validate_pysurv(model, X_train, y_train, X_val, y_val, preprocessor, feature_selector, scorer, model_path, param_grid, calculate_feature_importance=False):
+
+def preprocess_train_validate_pysurv(model, X_train, y_train, X_val, y_val, preprocessor, feature_selector, scorer,
+                                     model_path, param_grid, calculate_feature_importance=False):
     X_train_selected = preprocess_data(X_train, y_train, preprocessor, feature_selector, fit=True)
     X_val_selected = preprocess_data(X_val, y_val, preprocessor, feature_selector, fit=False)
 
@@ -19,7 +21,8 @@ def preprocess_train_validate_pysurv(model, X_train, y_train, X_val, y_val, prep
     log_memory_thread.daemon = True
     log_memory_thread.start()
 
-    best_params, best_score, best_model = hyperparameter_tuning(model, X_train_selected, y_train, X_val_selected, y_val, param_grid, scorer=scorer)
+    best_params, best_score, best_model = hyperparameter_tuning(model, X_train_selected, y_train, X_val_selected, y_val,
+                                                                param_grid, scorer=scorer)
 
     best_model.save(model_path)
 
@@ -28,16 +31,15 @@ def preprocess_train_validate_pysurv(model, X_train, y_train, X_val, y_val, prep
 
     c_index_surv, c_ipcws, mean_auc, ibs = validate_model(best_model, X_val_selected, y_val, y_train)
     if calculate_feature_importance:
-        importances = calculate_and_save_permutation_importance(best_model, X_val_selected, y_val, preprocessor, model_path)
+        importances = calculate_and_save_permutation_importance(best_model, X_val_selected, y_val, preprocessor,
+                                                                model_path)
     return best_model
-
-
 
 
 def initialize_model(model, params):
     model_name = str(model.__name__)
     if model_name in ["NonLinearCoxPHModel", "NeuralMultiTaskModel"]:
-        structure = params.pop("structure") 
+        structure = params.pop("structure")
         if model_name == "NeuralMultiTaskModel":
             bins = params.pop("bins")
             return model(structure=structure, bins=bins)
@@ -50,6 +52,7 @@ def initialize_model(model, params):
     else:
         return model()
 
+
 def calculate_score(scorer, survival_model, y_train, y_val, X_val):
     if scorer == concordance_index_ipcw:
         tau = calculate_tau(y_train)
@@ -57,7 +60,8 @@ def calculate_score(scorer, survival_model, y_train, y_val, X_val):
     elif scorer == integrated_brier_score:
         return -calculate_IBS(survival_model, y_train, X_val, y_val)
 
-def fit_and_score( model, params, X_train, y_train, X_val, y_val, scorer = concordance_index_ipcw):
+
+def fit_and_score(model, params, X_train, y_train, X_val, y_val, scorer=concordance_index_ipcw):
     survival_model = initialize_model(model, params)
 
     try:
@@ -69,6 +73,7 @@ def fit_and_score( model, params, X_train, y_train, X_val, y_val, scorer = conco
         return -np.inf, params, survival_model
 
     return score, params, survival_model
+
 
 def hyperparameter_tuning(model, X_train, y_train, X_val, y_val, hyperparameters, scorer=concordance_index_ipcw):
     param_grid = ParameterGrid(hyperparameters)

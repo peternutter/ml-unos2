@@ -1,22 +1,22 @@
 import logging
-from pathlib import Path
 import traceback
-from joblib import Parallel, delayed
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
+from joblib import Parallel, delayed
 from sklearn.pipeline import Pipeline
+from sksurv.metrics import (
+    integrated_brier_score,
+    concordance_index_censored,
+)
+
 from scikit_surv.sksurv_validation import (
     calculate_auc,
     calculate_c_index_surv,
     calculate_c_ipcws,
     mask_data,
 )
-from sksurv.metrics import (
-    integrated_brier_score,
-    concordance_index_ipcw,
-    concordance_index_censored,
-)
-
 from utils.utils import calculate_tau, log_error
 
 
@@ -58,7 +58,7 @@ def validate_model(model, X_val, y_val, y_train=None):
 
 
 def calculate_and_save_permutation_importance(
-    model, X_test, y_test, preprocessor, model_path, n_repeats=15, n_jobs=-1
+        model, X_test, y_test, preprocessor, model_path, n_repeats=15, n_jobs=-1
 ):
     try:
         logging.info("Calculating permutation importance...")
@@ -136,9 +136,9 @@ def permutation_importance(model, X, y, n_repeats=100, n_jobs=1):
 def get_feature_names(column_transformer):
     col_name = []
     for (
-        transformer_in_columns
+            transformer_in_columns
     ) in (
-        column_transformer.transformers_
+            column_transformer.transformers_
     ):  # the last transformer is ColumnTransformer's 'remainder'
         raw_col_name = transformer_in_columns[2]
         if isinstance(transformer_in_columns[1], Pipeline):
@@ -148,7 +148,7 @@ def get_feature_names(column_transformer):
         try:
             names = transformer.get_feature_names_out(raw_col_name)
         except (
-            AttributeError
+                AttributeError
         ):  # if no 'get_feature_names_out' function, use raw column name
             names = raw_col_name
         if isinstance(names, np.ndarray):  # eg.

@@ -1,12 +1,10 @@
+import logging
 import threading
 
 from joblib import dump
+
 from scikit_surv.sksurv_validation import calculate_and_save_permutation_importance, validate_model
 from utils.data_preprocessing import preprocess_data
-
-
-import logging
-
 from utils.utils import log_memory_periodically, log_model_params
 
 
