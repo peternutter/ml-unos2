@@ -62,7 +62,7 @@ def calculate_IBS(model, X_val, y_val, y_train):
         X_val_s, y_val_s = mask_data(X_val, y_val, y_train)
         times = np.percentile(y_val_s["time"], np.linspace(10, 90, 100))
         estimator = model
-        if hasattr(model, "estimator"):
+        if hasattr(model, "best_estimator_"):
             estimator = model.best_estimator_
         surv_prob = np.row_stack(
             [fn(times) for fn in estimator.predict_survival_function(X_val_s)]
@@ -79,6 +79,8 @@ def calculate_auc(y_val, y_train, risk):
     mean_auc = -np.inf
     try:
         times = np.percentile(y_train["time"], np.linspace(10, 90, 100))
+        tau = calculate_tau(y_train)
+        times = times[times < tau]
         auc, mean_auc = cumulative_dynamic_auc(y_train, y_val, risk, times=times)
         logging.info(f"Mean AUC: {mean_auc} using risk")
     except Exception as e:
@@ -88,7 +90,7 @@ def calculate_auc(y_val, y_train, risk):
 
 
 def calculate_and_save_permutation_importance(
-        model, X_test, y_test, preprocessor, model_path, n_repeats=15, n_jobs=16):
+        model, X_test, y_test, preprocessor, model_path, n_repeats=15, n_jobs=4):
     try:
         result = permutation_importance(
             model,

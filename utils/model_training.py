@@ -31,7 +31,7 @@ def create_randomized_search(
     Returns:
     RandomizedSearchCV object.
     """
-    logging.info(f"Randomized search parameters: {param_distributions} and n_jobs={n_jobs}")
+    logging.info(f"Randomized search, n_jobs={n_jobs}")
 
     cv = KFold(n_splits=n_splits, shuffle=True, random_state=42)
     if hasattr(model, "estimator"):

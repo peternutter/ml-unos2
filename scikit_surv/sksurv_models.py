@@ -29,7 +29,7 @@ class SurvivalModelFactory:
     @staticmethod
     def get_random_forest_model(n_jobs=8):
         return RandomSurvivalForest(
-            n_estimators=280,
+            n_estimators=400,
             max_depth=12,
             min_samples_split=15,
             max_features="sqrt",

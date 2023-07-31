@@ -35,33 +35,44 @@ def log_memory():
                   Percent used: {percent_used}%")
 
 
-def log_model_params(model):
+
+def log_model_params(model, prefix=""):
     """
-    Log model parameters and scores if they exist.
+    Recursively log model parameters and scores if they exist.
 
     Parameters:
     model (sklearn.base.BaseEstimator): The model to log parameters and scores from.
+    prefix (str): Prefix to use in logging, useful for nested models.
     """
+    
+    # Log the class name of the current model
+    logging.info(f"{prefix}Model: {model.__class__.__name__}")
 
-    param_attrs = [
+    # Look for specific attributes, which might be typical in certain wrappers
+    if hasattr(model, "estimator"):
+        log_model_params(model.estimator, prefix=prefix + "  ")
+
+    if hasattr(model, "best_estimator_"):
+        log_model_params(model.best_estimator_, prefix=prefix + "  ")
+
+    # Log generic attributes
+    log_attributes = [
         "get_params",
         "train_score_",
         "oob_score_",
         "best_score_",
         "best_params_",
         "feature_importances_",
-        "estimator.feature_importances_",
     ]
-
-    for attr in param_attrs:
+    
+    for attr in log_attributes:
         try:
-            value = getattr(model, attr)
-            logging.info(f"{attr}: {value}")
+            value = getattr(model, attr) if callable(getattr(model, attr)) else getattr(model, attr, 'N/A')
+            logging.info(f"{prefix}{attr}: {value}")
         except (NotImplementedError, AttributeError):
-            logging.info(f"{attr} not implemented or does not exist for this model.")
+            pass
+
 
 def log_error(error):
     logging.error(f"Error: {str(error)}")
     logging.error(traceback.format_exc())
-
-
