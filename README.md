@@ -107,10 +107,10 @@ For the scikit-survival pipeline, `SurvivalModelFactory` and `ModelParameterGrid
 ```python
 model = SurvivalModelFactory.get_coxnet_model()
 param_grid = ModelParameterGridFactory.get_coxnet_param_grid()
-concordance_wrappper = ScorerFactory.as_concordance_index_ipcw_scorer(model, y_train)
+wrappper = ScorerFactory.as_concordance_index_ipcw_scorer(model, y_train)
 random_search = create_randomized_search(param_grid, concordance_wrapper)
 ```
-You can either use the model, concordance wrapper, and random search objects in the training process depending on your needs.
+You can either use the model, wrapper, and random search objects in the training process depending on your needs.
 
 ```python
 preprocess_train_validate(

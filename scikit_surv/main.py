@@ -40,9 +40,9 @@ def main():
 
     model_path = model_path_format.format(output_dir=output_dir)
     model = SurvivalModelFactory.get_coxnet_model()
-    concordance_wrappper = ScorerFactory.as_concordance_index_ipcw_scorer(model, y_train)
+    wrappper = ScorerFactory.as_concordance_index_ipcw_scorer(model, y_train)
     param_grid = ModelParameterGridFactory.get_rsf_param_grid()
-    random_search = create_randomized_search(param_grid, concordance_wrappper)
+    random_search = create_randomized_search(param_grid, wrappper)
     # Feature selection
     pca = PCA(n_components=0.99, random_state=42)
 
