@@ -15,7 +15,6 @@ The project has the following structure:
 ├── config
 │   ├── column_names.py
 │   ├── config.py
-├── notebooks
 ├── pysurv
 │   ├── a_submit.sh
 │   ├── b_submit.sh
@@ -36,6 +35,7 @@ The project has the following structure:
     ├── data_preprocessing.py
     ├── logger.py
     ├── utils.py
+    ├── model_validation.py
 ```
 
 ## Directories Explained
@@ -98,6 +98,7 @@ For the PySurvival pipeline, `ParamFactory` is used to create models and paramet
 param_factory = ParamFactory(model="non_linear_cox", is_grid=False)
 model, param_grid = param_factory.get_params()
 ```
+For this pipline the grid seach can be triigered by setting `is_grid=True`.
 
 ### Scikit_surv Pipeline
 
@@ -108,4 +109,19 @@ model = SurvivalModelFactory.get_coxnet_model()
 param_grid = ModelParameterGridFactory.get_coxnet_param_grid()
 concordance_wrappper = ScorerFactory.as_concordance_index_ipcw_scorer(model, y_train)
 random_search = create_randomized_search(param_grid, concordance_wrapper)
+```
+You can either use the model, concordance wrapper, and random search objects in the training process depending on your needs.
+
+```python
+preprocess_train_validate(
+    model=model,
+    X_train=X_train,
+    y_train=y_train,
+    X_val=X_val,
+    y_val=y_val,
+    preprocessor=preprocessor,
+    feature_selector=None,
+    model_path=model_path,
+    calculate_permutation_importance=True,
+)
 ```

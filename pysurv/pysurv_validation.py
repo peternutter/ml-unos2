@@ -11,12 +11,10 @@ from sksurv.metrics import (
     concordance_index_censored,
 )
 
-from scikit_surv.sksurv_validation import (
+from utils.model_validation import (
     calculate_auc,
-    calculate_c_index_surv,
-    calculate_c_ipcws,
-    mask_data,
 )
+from utils.model_validation import calculate_c_index_surv, calculate_c_ipcws, mask_data
 from utils.utils import calculate_tau, log_error
 
 

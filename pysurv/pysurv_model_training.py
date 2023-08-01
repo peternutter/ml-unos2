@@ -12,7 +12,7 @@ from utils.data_preprocessing import preprocess_data
 from utils.utils import calculate_tau, log_memory_periodically
 
 
-def preprocess_train_validate_pysurv(model, X_train, y_train, X_val, y_val, preprocessor, feature_selector, scorer,
+def preprocess_train_validate(model, X_train, y_train, X_val, y_val, preprocessor, feature_selector, scorer,
                                      model_path, param_grid, calculate_feature_importance=False):
     X_train_selected = preprocess_data(X_train, y_train, preprocessor, feature_selector, fit=True)
     X_val_selected = preprocess_data(X_val, y_val, preprocessor, feature_selector, fit=False)

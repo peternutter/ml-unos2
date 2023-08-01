@@ -4,8 +4,8 @@ import sys
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(parent_dir)
 import logging
-from xmlrpc.client import DateTime
-from pysurv.pysurv_model_training import preprocess_train_validate_pysurv
+from datetime import datetime
+from pysurv.pysurv_model_training import preprocess_train_validate
 from utils.data_preprocessing import create_preprocessor, load_data, split_data
 from utils.logger import get_output_dir, parse_arguments, setup_logging
 from config.config import timestamp_format, data_filename_feather, model_path_format
@@ -20,7 +20,7 @@ def main():
 
     # If the timestamp is not provided, use the current time
     timestamp = (
-        args.timestamp if args.timestamp else DateTime.now().strftime(timestamp_format)
+        args.timestamp if args.timestamp else datetime.now().strftime(timestamp_format)
     )
 
     output_dir = get_output_dir(timestamp)
@@ -43,12 +43,12 @@ def main():
 
     model_path = model_path_format.format(output_dir=output_dir)
 
-    param_factory = ParamFactory(model="non_linear_cox", is_grid=False)
+    param_factory = ParamFactory(model="coxPH", is_grid=False)
     model, param_grid = param_factory.get_params()
     pca = PCA(n_components=0.99)
     # Train and save model
     logging.info("Training and saving model...")
-    preprocess_train_validate_pysurv(
+    preprocess_train_validate(
         model=model,
         X_train=X_train,
         y_train=y_train,
