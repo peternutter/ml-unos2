@@ -72,6 +72,7 @@ def calculate_and_save_permutation_importance(
     except Exception as e:
         log_error(e)
         importance_df = pd.DataFrame()
+        
     return importance_df
 
 
@@ -82,3 +83,4 @@ def build_importance_df(result, feature_names):
     },
         index=feature_names,
     ).sort_values(by="importances_mean", ascending=False)
+
